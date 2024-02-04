@@ -10,7 +10,10 @@ UCLASS()
 class DODGEBALL_API AEnemyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = LookAt, meta = (AllowPrivateAccess = true))
+	USceneComponent* SightSource;
+	
 public:
 	// Sets default values for this character's properties
 	AEnemyCharacter();
@@ -28,4 +31,5 @@ public:
 
 public:
 	void LookAtActor(AActor* TargetActor);
+	bool CanSeeActor(const AActor* TargetActor) const;
 };
