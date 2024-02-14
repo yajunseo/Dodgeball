@@ -30,6 +30,21 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	void LookAtActor(AActor* TargetActor);
+	bool LookAtActor(AActor* TargetActor);
 	bool CanSeeActor(const AActor* TargetActor) const;
+
+protected:
+	bool bCanSeePlayer = false;
+	bool bPreviousCanSeePlayer = false;
+
+protected:
+	FTimerHandle ThrowTimerHandle;
+	float ThrowingInterval = 2.f;
+	float ThrowingDelay = 0.5f;
+
+	void ThrowDodgeball();
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DodgeBall)
+	TSubclassOf<class ADodgeballProjectile> DodgeballClass;
 };

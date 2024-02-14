@@ -29,7 +29,8 @@ ADodgeballProjectile::ADodgeballProjectile()
 void ADodgeballProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SetLifeSpan(5.f);
 }
 
 // Called every frame
