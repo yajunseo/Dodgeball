@@ -33,4 +33,6 @@ private:
 public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovementComponent() const {return ProjectileMovement;}
 };

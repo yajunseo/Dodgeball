@@ -2,7 +2,10 @@
 
 
 #include "EnemyCharacter.h"
+
+#include "DodgeballCharacter.h"
 #include "DodgeballProjectile.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -65,10 +68,14 @@ bool AEnemyCharacter::LookAtActor(AActor* TargetActor)
 
 	if(CanSeeActor(TargetActor))
 	{
+		FRotator BaseRotator = GetActorRotation();
+		
 		FVector Start = SightSource->GetComponentLocation();
 		FVector End = TargetActor->GetActorLocation();
 
 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(Start, End);
+		LookAtRotation.Pitch = BaseRotator.Pitch;
+		LookAtRotation.Roll = BaseRotator.Roll;
 		SetActorRotation(LookAtRotation);
 		return true;
 	}
@@ -105,6 +112,9 @@ void AEnemyCharacter::ThrowDodgeball()
 	FVector ForwardVector = GetActorForwardVector();
 	float SpawnDistance = 40.f;
 	FVector SpawnLocation = GetActorLocation() + (ForwardVector * SpawnDistance);
+	FTransform SpawnTransform((GetActorRotation(), SpawnLocation));
 	
-	GetWorld()->SpawnActor<ADodgeballProjectile>(DodgeballClass, SpawnLocation, GetActorRotation());
+	ADodgeballProjectile* Projectile = GetWorld()->SpawnActorDeferred<ADodgeballProjectile>(DodgeballClass, SpawnTransform);
+	Projectile->GetProjectileMovementComponent()->InitialSpeed = 2200.0f;
+	Projectile->FinishSpawning(SpawnTransform);
 }

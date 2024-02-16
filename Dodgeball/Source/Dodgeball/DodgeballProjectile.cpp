@@ -22,7 +22,7 @@ ADodgeballProjectile::ADodgeballProjectile()
 	RootComponent = SphereComponent;
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
-	ProjectileMovement->InitialSpeed = 1500.f;
+	ProjectileMovement->InitialSpeed = 2200.f;
 }
 
 // Called when the game starts or when spawned
