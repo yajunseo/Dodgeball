@@ -4,7 +4,9 @@
 #include "EnemyCharacter.h"
 
 #include "DodgeballCharacter.h"
+#include "DodgeballFunctionLibrary.h"
 #include "DodgeballProjectile.h"
+#include "LookAtActorComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -15,15 +17,18 @@ AEnemyCharacter::AEnemyCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SightSource = CreateDefaultSubobject<USceneComponent>(TEXT("SightSource"));
-	SightSource->SetupAttachment(RootComponent);
+	LookAtActorComponent = CreateDefaultSubobject<ULookAtActorComponent>(TEXT("Look At Actor Component"));
+	LookAtActorComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Fetch the character currently being controlled by the player
+	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
+	LookAtActorComponent->SetTarget(PlayerCharacter);
 }
 
 // Called every frame
@@ -31,27 +36,28 @@ void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-	bCanSeePlayer = LookAtActor(PlayerCharacter);
+	// Look at the player character every frame
+	bCanSeePlayer = LookAtActorComponent->CanSeeTarget();
 
-	if(bCanSeePlayer != bPreviousCanSeePlayer)
+	if (bCanSeePlayer != bPreviousCanSeePlayer)
 	{
-		if(bCanSeePlayer)
+		if (bCanSeePlayer)
 		{
-			GetWorldTimerManager().SetTimer(ThrowTimerHandle, \
-				this,
-				&AEnemyCharacter::ThrowDodgeball,
-				ThrowingInterval,
-				true,
-				ThrowingDelay);
+			//Start throwing dodgeballs
+			GetWorldTimerManager().SetTimer(ThrowTimerHandle,
+											this,
+											&AEnemyCharacter::ThrowDodgeball,
+											ThrowingInterval,
+											true,
+											ThrowingDelay);
 		}
-
 		else
 		{
+			//Stop throwing dodgeballs
 			GetWorldTimerManager().ClearTimer(ThrowTimerHandle);
 		}
 	}
-	
+
 	bPreviousCanSeePlayer = bCanSeePlayer;
 }
 
@@ -60,49 +66,6 @@ void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
-
-bool AEnemyCharacter::LookAtActor(AActor* TargetActor)
-{
-	if(TargetActor == nullptr) return false;
-
-	if(CanSeeActor(TargetActor))
-	{
-		FRotator BaseRotator = GetActorRotation();
-		
-		FVector Start = SightSource->GetComponentLocation();
-		FVector End = TargetActor->GetActorLocation();
-
-		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(Start, End);
-		LookAtRotation.Pitch = BaseRotator.Pitch;
-		LookAtRotation.Roll = BaseRotator.Roll;
-		SetActorRotation(LookAtRotation);
-		return true;
-	}
-
-	return false;
-}
-
-bool AEnemyCharacter::CanSeeActor(const AActor* TargetActor) const
-{
-	if(TargetActor == nullptr)
-	{
-		return false;
-	}
-
-	FHitResult Hit;
-
-	FVector Start = SightSource->GetComponentLocation();
-	FVector End = TargetActor->GetActorLocation();
-	ECollisionChannel Channel = ECollisionChannel::ECC_GameTraceChannel1;
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-	QueryParams.AddIgnoredActor(TargetActor);
-	
-	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, Channel, QueryParams);
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
-	
-	return !Hit.bBlockingHit;
 }
 
 void AEnemyCharacter::ThrowDodgeball()

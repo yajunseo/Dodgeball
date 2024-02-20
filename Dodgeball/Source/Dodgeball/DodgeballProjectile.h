@@ -35,4 +35,8 @@ public:
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovementComponent() const {return ProjectileMovement;}
+
+protected:
+	UPROPERTY(EditAnywhere, Category = Damage)
+	float Damage = 34.f;
 };

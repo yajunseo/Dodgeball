@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HealthInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "DodgeballCharacter.generated.h"
@@ -16,7 +17,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ADodgeballCharacter : public ACharacter
+class ADodgeballCharacter : public ACharacter, public  IHealthInterface
 {
 	GENERATED_BODY()
 
@@ -69,5 +70,11 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+private:
+	class UHealthComponent* HealthComponent;
+
+public:
+	virtual  void OnDeath_Implementation() override;
 };
 
