@@ -3,6 +3,7 @@
 
 #include "RestartWidget.h"
 
+#include "DodgeballPlayerController.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,5 +20,11 @@ void URestartWidget::NativeOnInitialized()
 
 void URestartWidget::OnRestartClicked()
 {
+	ADodgeballPlayerController* PlayerController = Cast<ADodgeballPlayerController>(GetOwningPlayer());
+	if (PlayerController != nullptr)
+	{
+		PlayerController->HideRestartWidget();
+	}
+
 	UGameplayStatics::OpenLevel(this, FName(*UGameplayStatics::GetCurrentLevelName(this)));
 }
