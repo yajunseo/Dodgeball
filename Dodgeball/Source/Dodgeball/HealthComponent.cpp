@@ -45,7 +45,7 @@ void UHealthComponent::LoseHealth(float Amount)
 
 		if(GetOwner()->Implements<UHealthInterface>())
 		{
-			IHealthInterface::Execute_OnDeath(GetOwner());
+			IHealthInterface::Execute_OnTakeDamage(GetOwner());
 		}
 	}
 }

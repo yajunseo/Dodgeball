@@ -16,6 +16,12 @@ void URestartWidget::NativeOnInitialized()
 		RestartButton->OnClicked.AddDynamic(this,
 			&URestartWidget::OnRestartClicked);
 	}
+
+	if(ExitButton != nullptr)
+	{
+		ExitButton->OnClicked.AddDynamic(this,
+			&URestartWidget::OnExitClicked);
+	}
 }
 
 void URestartWidget::OnRestartClicked()
@@ -27,4 +33,9 @@ void URestartWidget::OnRestartClicked()
 	}
 
 	UGameplayStatics::OpenLevel(this, FName(*UGameplayStatics::GetCurrentLevelName(this)));
+}
+
+void URestartWidget::OnExitClicked()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, true);
 }

@@ -13,5 +13,10 @@ UCLASS()
 class DODGEBALL_API UHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HealthBar;
+
+public:
+	void UpdateHealthPercent(float HealthPercent);
 };
